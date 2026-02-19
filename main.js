@@ -1,112 +1,43 @@
-/* =====================
-   AUDIO (PLAY ONCE)
-===================== */
-const music = document.getElementById("music");
-let played = false;
-
-/* =====================
-   CANVAS SETUP
-===================== */
-const canvas = document.getElementById("effects");
-const ctx = canvas.getContext("2d");
-
-function resizeCanvas() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-}
-resizeCanvas();
-window.addEventListener("resize", resizeCanvas);
-
-let particles = [];
-let confettiActive = false;
-
-/* =====================
-   HELPERS
-===================== */
-function rand(min, max) {
-  return Math.random() * (max - min) + min;
+function increase() {
+    let qty = document.getElementById("quantity");
+    qty.value = parseInt(qty.value) + 1;
 }
 
-/* =====================
-   FIREWORKS
-===================== */
-function firework(x, y) {
-  for (let i = 0; i < 120; i++) {
-    particles.push({
-      x,
-      y,
-      vx: rand(-6, 6),
-      vy: rand(-6, 6),
-      life: 80,
-      size: 3,
-      color: `hsl(${rand(0, 360)}, 100%, 60%)`
-    });
-  }
+function decrease() {
+    let qty = document.getElementById("quantity");
+    if (parseInt(qty.value) > 1) {
+        qty.value = parseInt(qty.value) - 1;
+    }
 }
 
-/* =====================
-   CONTINUOUS CONFETTI
-===================== */
-function spawnConfetti() {
-  for (let i = 0; i < 10; i++) {
-    particles.push({
-      x: rand(0, canvas.width),
-      y: -10,
-      vx: rand(-1.5, 1.5),
-      vy: rand(2, 5),
-      life: 9999,
-      size: rand(3, 6),
-      color: `hsl(${rand(0, 360)}, 100%, 50%)`
-    });
-  }
-}
+function sendOrder() {
+    let name = document.getElementById("name").value;
+    let phone = document.getElementById("phone").value;
+    let location = document.getElementById("location").value;
+    let sweetType = document.getElementById("sweetType").value;
+    let quantity = document.getElementById("quantity").value;
 
-/* =====================
-   ANIMATION LOOP
-===================== */
-function animate() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  if (confettiActive) spawnConfetti();
-
-  particles.forEach((p, i) => {
-    p.x += p.vx;
-    p.y += p.vy;
-
-    ctx.fillStyle = p.color;
-    ctx.fillRect(p.x, p.y, p.size, p.size);
-
-    if (p.y > canvas.height) {
-      p.y = -10;
-      p.x = rand(0, canvas.width);
+    if(name === "" || phone === "" || location === "" || sweetType === "") {
+        alert("Please fill all fields and select sweetening option.");
+        return;
     }
 
-    if (p.life-- <= 0) particles.splice(i, 1);
-  });
+    let total = quantity * 500;
 
-  requestAnimationFrame(animate);
+    let message =
+    "Hello FidEx Nuts,%0A%0A" +
+    "I would like to place an order:%0A" +
+    "--------------------------------%0A" +
+    "Sweetening Type: " + sweetType + "%0A" +
+    "Quantity: " + quantity + " Pack(s)%0A" +
+    "Total Amount: ₦" + total + "%0A%0A" +
+    "Customer Details:%0A" +
+    "Name: " + name + "%0A" +
+    "Phone: " + phone + "%0A" +
+    "Location: " + location + "%0A%0A" +
+    "Thank you.";
+
+    let whatsappNumber = "2348058075181";
+
+    window.open("https://wa.me/" + whatsappNumber + "?text=" + message, "_blank");
 }
-animate();
-
-/* =====================
-   GIFT BOX CLICK
-===================== */
-document.getElementById("box").addEventListener("click", () => {
-  if (!played) {
-    music.currentTime = 0;
-    music.play().catch(() => {});
-    played = true;
-  }
-
-  document.body.classList.add("open");
-  document.getElementById("message").style.opacity = 1;
-
-  confettiActive = true;
-
-  for (let i = 0; i < 6; i++) {
-    firework(
-      rand(200, canvas.width - 200),
-      rand(100, 400)
-    );
-  }
-});
