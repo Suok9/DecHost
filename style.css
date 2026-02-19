@@ -1,139 +1,78 @@
-html, body {
-  margin: 0;
-  padding: 0;
-  background: radial-gradient(circle at top, #020111, #000);
-  overflow: hidden;
-  height: 100%;
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f5f1e6;
+    color: #4b2e1e;
 }
 
-/* 🎆 Canvas */
-canvas {
-  position: fixed;
-  inset: 0;
-  z-index: 1;
+header {
+    background-color: #6b3e26;
+    color: white;
+    padding: 20px;
+    text-align: center;
 }
 
-/* 🎁 Box Container */
-#box-container {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  z-index: 3;
+section {
+    padding: 40px 20px;
+    max-width: 800px;
+    margin: auto;
 }
 
-/* 🎁 Gift Box */
-.gift-box {
-  width: 160px;
-  height: 160px;
-  background:
-    linear-gradient(145deg, #ff2a2a, #8b0000);
-  position: relative;
-  cursor: pointer;
-
-  border-radius: 10px;
-
-  /* 3D depth */
-  box-shadow:
-    0 20px 40px rgba(0, 0, 0, 0.6),
-    inset 0 6px 10px rgba(255, 255, 255, 0.25),
-    inset 0 -8px 12px rgba(0, 0, 0, 0.4);
-
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+.product-box {
+    background: white;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
-.gift-box:hover {
-  transform: translateY(-6px) scale(1.03);
-  box-shadow:
-    0 30px 60px rgba(0, 0, 0, 0.8),
-    0 0 25px rgba(255, 215, 0, 0.6);
+h2, h3 {
+    color: #6b3e26;
 }
 
-/* 🎀 Vertical Ribbon */
-.ribbon-v {
-  position: absolute;
-  width: 36px;
-  height: 100%;
-  background: linear-gradient(gold, #e6b800);
-  left: 62px;
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
 }
 
-/* 🎀 Horizontal Ribbon */
-.ribbon-h {
-  position: absolute;
-  height: 36px;
-  width: 100%;
-  background: linear-gradient(gold, #e6b800);
-  top: 62px;
+.quantity-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-/* 🎀 Bow */
-.bow {
-  position: absolute;
-  top: -28px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 70px;
-  height: 40px;
+.quantity-box button {
+    width: 40px;
+    padding: 8px;
+    background-color: #6b3e26;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
-.bow::before,
-.bow::after {
-  content: "";
-  position: absolute;
-  width: 35px;
-  height: 25px;
-  background: gold;
-  border-radius: 50% 50% 0 0;
+.order-btn {
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    background-color: #25D366;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
 }
 
-.bow::before {
-  left: 0;
-  transform: rotate(-20deg);
+.order-btn:hover {
+    background-color: #1ebd5a;
 }
 
-.bow::after {
-  right: 0;
-  transform: rotate(20deg);
-}
-
-/* 🎁 Lid */
-.lid {
-  position: absolute;
-  width: 170px;
-  height: 50px;
-  background: linear-gradient(#ff1e1e, #a00000);
-  top: -50px;
-  left: -5px;
-  transform-origin: center bottom;
-  transition: transform 0.9s ease;
-}
-
-/* ✨ Merry Christmas Text */
-#message {
-  position: absolute;
-  top: 30%;
-  width: 100%;
-  text-align: center;
-  font-family: 'Great Vibes', cursive;
-  font-size: clamp(4rem, 9vw, 7rem);
-  color: gold;
-  opacity: 0;
-  z-index: 4;
-  letter-spacing: 4px;
-  text-shadow:
-    0 0 20px gold,
-    0 0 50px crimson,
-    0 0 80px white;
-  transition: transform 1.5s ease;
-  transform: scale(0);
-}
-
-.open #message {
-  transform: scale(1.5);
-}
-
-/* 🎁 Open Animation */
-.open .lid {
-  transform: rotateX(120deg) translateY(-40px);
+footer {
+    background-color: #6b3e26;
+    color: white;
+    text-align: center;
+    padding: 15px;
+    margin-top: 40px;
 }
