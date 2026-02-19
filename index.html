@@ -1,35 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Merry Christmas 🎄</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>FidEx Nuts - Groundnut Cakes</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- 🎄 Christmas Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
-
-  <!-- 🎨 Styles -->
-  <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-  <canvas id="effects"></canvas>
+<header>
+    <h1>FidEx Nuts</h1>
+    <p>Fresh & Crunchy Groundnut Cakes in Delta</p>
+</header>
 
-  <div id="box-container">
-    <div class="gift-box" id="box">
-      <div class="lid"></div>
-      <div class="bow"></div>
-      <div class="ribbon-v"></div>
-      <div class="ribbon-h"></div>
-    </div>
-  </div>
+<section>
+<div class="product-box">
 
-  <div id="message">Merry Christmas</div>
+<h2>Place Your Order</h2>
 
-  <audio id="music" src="btr_christmas.mp3" preload="auto"></audio>
+<p><strong>Price:</strong> ₦500 per pack</p>
+<p><strong>Home Delivery Fee:</strong> +₦200</p>
 
-  <!-- ✨ Script -->
-  <script src="main.js"></script>
+<h3>Sweetening Option</h3>
+<select id="sweetType" required>
+    <option value="">Select Option</option>
+    <option value="Honey Sweetened">Honey Sweetened</option>
+    <option value="Sugar Sweetened">Sugar Sweetened</option>
+</select>
+
+<h3>Quantity</h3>
+<div class="quantity-box">
+    <button onclick="decrease()">-</button>
+    <input type="text" id="quantity" value="1" readonly>
+    <button onclick="increase()">+</button>
+</div>
+
+<h3>Your Information</h3>
+<input type="text" id="name" placeholder="Full Name" required>
+<input type="tel" id="phone" placeholder="Phone Number" required>
+<input type="text" id="location" placeholder="Delivery Location (Delta)" required>
+
+<button class="order-btn" onclick="sendOrder()">
+Submit Order on WhatsApp
+</button>
+
+</div>
+</section>
+
+<footer>
+&copy; 2026 FidEx Nuts | Entrepreneurship Studies Project
+</footer>
+
+<script src="main.js"></script>
 </body>
 </html>
