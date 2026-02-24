@@ -1,12 +1,12 @@
 function increase() {
     let qty = document.getElementById("quantity");
-    qty.value = parseInt(qty.value) + 1;
+    qty.value = parseInt(qty.value) + 5;
 }
 
 function decrease() {
     let qty = document.getElementById("quantity");
-    if (parseInt(qty.value) > 1) {
-        qty.value = parseInt(qty.value) - 1;
+    if (parseInt(qty.value) > 5) {
+        qty.value = parseInt(qty.value) - 5;
     }
 }
 
