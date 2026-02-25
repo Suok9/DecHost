@@ -17,8 +17,8 @@ function decrease() {
 function updateTotal() {
     let quantity = parseInt(document.getElementById("quantity").value) || 1;
 
-    if (quantity < 5) {
-        quantity = 5;
+    if (quantity < 1) {
+        quantity = 1;
         document.getElementById("quantity").value = 1;
     }
 
