@@ -1,8 +1,15 @@
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
 body {
     margin: 0;
     font-family: Arial, sans-serif;
     background-color: #f5f1e6;
     color: #4b2e1e;
+    display: flex;
+    flex-direction: column;
 }
 
 header {
@@ -80,5 +87,24 @@ footer {
     color: white;
     text-align: center;
     padding: 15px;
-    margin-top: 40px;
+    margin-top: auto;
+}
+.header {
+    background-color: #6b3e26;
+    color: white;
+    padding: 15px 20px;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #f5f1e6;
 }
