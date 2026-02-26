@@ -1,11 +1,53 @@
-import { collection, addDoc, serverTimestamp }
+import { query, where, getDocs, collection, addDoc, serverTimestamp }
 from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+
+
+// ===== Load Customer Orders =====
+window.loadCustomerOrders = async function() {
+    
+    let phoneInput = document.getElementById("phone");
+    if (!phoneInput) return;
+    
+    let phone = phoneInput.value.trim();
+    if (!phone) {
+        document.getElementById("customerOrders").innerHTML = "Enter phone number to see previous orders.";
+        return;
+    }
+    
+    const q = query(
+        collection(window.db, "orders"),
+        where("phone", "==", phone)
+    );
+    
+    const snapshot = await getDocs(q);
+    
+    let container = document.getElementById("customerOrders");
+    container.innerHTML = "";
+    
+    if (snapshot.empty) {
+        container.innerHTML = "No previous orders.";
+        return;
+    }
+    
+    snapshot.forEach(doc => {
+        let order = doc.data();
+        container.innerHTML += `
+            <div style="border:1px solid #ccc; padding:8px; margin:8px 0; border-radius:5px;">
+                <strong>Ref:</strong> ${order.ref}<br>
+                Quantity: ${order.quantity}<br>
+                Total: ₦${order.total}<br>
+            </div>
+        `;
+    });
+};
+
 
 // ===== Reference Generator =====
 function generateRef() {
     let random = Math.floor(Math.random() * 900000) + 100000;
     return "FDX-2026-" + random;
 }
+
 
 // ===== Quantity Controls (Minimum 5) =====
 window.increase = function() {
@@ -24,26 +66,32 @@ window.decrease = function() {
 
 window.updateTotal = function() {
     let qtyInput = document.getElementById("quantity");
-    let quantity = parseInt(qtyInput.value) || 5;
+    let quantity = parseInt(qtyInput.value);
     
-    if (quantity < 5) {
-        quantity = 5;
-        qtyInput.value = 5;
+    if (isNaN(quantity)) {
+        document.getElementById("totalDisplay").innerText = "Total: ₦0";
+        return;
     }
     
     let total = (quantity * 500) + 200;
     document.getElementById("totalDisplay").innerText = "Total: ₦" + total;
 };
 
-// ===== SEND ORDER TO FIREBASE =====
+
+// ===== SEND ORDER =====
 window.sendOrder = async function() {
     
     let name = document.getElementById("name").value.trim();
-    let phone = document.getElementById("phone").value;
-    let location = document.getElementById("location").value;
-    let quantity = parseInt(document.getElementById("quantity").value) || 5;
+    let phone = document.getElementById("phone").value.trim();
+    let location = document.getElementById("location").value.trim();
+    let quantity = parseInt(document.getElementById("quantity").value);
     
-    if (name === "" || phone === "" || location === "") {
+    if (isNaN(quantity) || quantity < 5) {
+        alert("Minimum order is 5 packs.");
+        return;
+    }
+    
+    if (!name || !phone || !location) {
         alert("Please fill all fields.");
         return;
     }
@@ -62,7 +110,10 @@ window.sendOrder = async function() {
     };
     
     try {
+        
         await addDoc(collection(window.db, "orders"), order);
+        
+        await loadCustomerOrders(); // 🔥 now placed correctly
         
         let message =
             "Hello FidEx Nuts,%0A%0A" +
@@ -83,7 +134,22 @@ window.sendOrder = async function() {
     }
 };
 
-updateTotal();
+
+// ===== Auto Load History When Phone Changes =====
+document.addEventListener("DOMContentLoaded", () => {
+    
+    updateTotal();
+    
+    const phoneInput = document.getElementById("phone");
+    
+    if (phoneInput) {
+        phoneInput.addEventListener("blur", () => {
+            loadCustomerOrders();
+        });
+    }
+    
+});
+
 
 // ===== Service Worker =====
 if ('serviceWorker' in navigator) {
@@ -93,6 +159,7 @@ if ('serviceWorker' in navigator) {
             .catch(err => console.log("SW registration failed:", err));
     });
 }
+
 
 // ===== Install Button =====
 let deferredPrompt;
