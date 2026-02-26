@@ -1,14 +1,20 @@
 {
   "name": "FidEx Nuts",
   "short_name": "FidEx",
-  "start_url": "index.html",
+  "start_url": "/DecHost/",
+  "scope": "/DecHost/",
   "display": "standalone",
   "background_color": "#f5f1e6",
   "theme_color": "#6b3e26",
   "icons": [
     {
-      "src": "logo.png",
+      "src": "/DecHost/logo.png",
       "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/DecHost/logo.png",
+      "sizes": "512x512",
       "type": "image/png"
     }
   ]
