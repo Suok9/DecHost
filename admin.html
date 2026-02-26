@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>FidEx Nuts - Admin Panel</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+<h1>FidEx Nuts - Admin Dashboard</h1>
+</header>
+
+<section>
+<div class="product-box">
+<h2>All Orders</h2>
+<div id="orders"></div>
+<button class="order-btn" style="background:red;" onclick="clearOrders()">Clear Orders</button>
+</div>
+</section>
+
+<footer>Executive Access Only</footer>
+
+<script>
+function loadOrders() {
+    let orders = JSON.parse(localStorage.getItem("fidexOrders")) || [];
+    let container = document.getElementById("orders");
+
+    if(orders.length === 0){
+        container.innerHTML = "No orders yet.";
+        return;
+    }
+
+    let grouped = {};
+
+    // Group by name
+    orders.forEach(order => {
+        if(!grouped[order.name]) {
+            grouped[order.name] = [];
+        }
+        grouped[order.name].push(order);
+    });
+
+    let html = "";
+
+    for(let customer in grouped) {
+        html += `<div style="margin-bottom:20px;">
+                    <h3>📁 ${customer}</h3>`;
+
+        grouped[customer].forEach(order => {
+            html += `
+            <div style="border:1px solid #ccc; padding:8px; margin:8px 0; border-radius:5px;">
+                <strong>Ref:</strong> ${order.ref}<br>
+                Date: ${order.date}<br>
+                Type: ${order.sweetType}<br>
+                Quantity: ${order.quantity}<br>
+                Total: ₦${order.total}<br>
+                Phone: ${order.phone}<br>
+                Location: ${order.location}
+            </div>`;
+        });
+
+        html += `</div>`;
+    }
+
+    container.innerHTML = html;
+}
+
+function clearOrders(){
+    if(confirm("Delete all orders?")){
+        localStorage.removeItem("fidexOrders");
+        loadOrders();
+    }
+}
+
+loadOrders();
+</script>
+
+</body>
+</html>

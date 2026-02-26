@@ -4,7 +4,6 @@ html, body {
 }
 
 body {
-    margin: 0;
     font-family: Arial, sans-serif;
     background-color: #f5f1e6;
     color: #4b2e1e;
@@ -15,14 +14,28 @@ body {
 header {
     background-color: #6b3e26;
     color: white;
-    padding: 20px;
-    text-align: center;
+    padding: 15px 20px;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #f5f1e6;
 }
 
 section {
     padding: 40px 20px;
     max-width: 800px;
     margin: auto;
+    flex: 1;
 }
 
 .product-box {
@@ -77,9 +90,9 @@ input, select {
 }
 
 #totalDisplay {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: bold;
-    color: #6b3e26;
+    margin-top: 10px;
 }
 
 footer {
@@ -89,22 +102,15 @@ footer {
     padding: 15px;
     margin-top: auto;
 }
-.header {
-    background-color: #6b3e26;
-    color: white;
-    padding: 15px 20px;
+
+.admin-link {
+    color: #f5f1e6;
+    font-size: 12px;
+    text-decoration: none;
+    opacity: 0.7;
 }
 
-.logo-container {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.logo {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #f5f1e6;
+.admin-link:hover {
+    text-decoration: underline;
+    opacity: 1;
 }
