@@ -23,7 +23,11 @@
 
 <section>
 <div class="product-box">
+<button class="order-btn" onclick="googleLogin()">
+Sign in with Google
+</button>
 
+<p id="userInfo"></p>
 <h2>Place Your Order</h2>
 
 <p><strong>Price:</strong> ₦500 per pack</p>
@@ -72,6 +76,7 @@ Submit Order on WhatsApp
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
     import { getFirestore } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+    import { getAuth } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
     
     const firebaseConfig = {
         apiKey: "AIzaSyDzBRb6n9iHvzJ6cpJwPJ2hHJSovZkDb5o",
@@ -85,7 +90,10 @@ Submit Order on WhatsApp
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     
-    window.db = db;
+    const auth = getAuth(app);
+
+window.db = db;
+window.auth = auth;
 </script>
 <script type="module" src="main.js"></script>
 
