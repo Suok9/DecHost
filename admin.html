@@ -1,40 +1,107 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>FidEx Nuts - Admin Panel</title>
+<meta charset="UTF-8">
+<title>FidEx Admin</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<header>
-<h1>FidEx Nuts - Admin Dashboard</h1>
-</header>
-
 <section>
-<div class="product-box">
-<h2>All Orders</h2>
-<div id="orders"></div>
-<button class="order-btn" style="background:red;" onclick="clearOrders()">Clear Orders</button>
+
+<!-- LOGIN SCREEN -->
+<div class="product-box" id="loginBox">
+    <h2>Executive Login</h2>
+    <input type="password" id="adminCode" placeholder="Enter Access Code">
+    <button class="order-btn" onclick="login()">Login</button>
 </div>
+
+<!-- ADMIN PANEL (hidden completely) -->
+<div class="product-box" id="adminPanel" style="display:none;">
+    <h2>Executive Dashboard</h2>
+
+    <div id="analytics"></div>
+    <div id="orders"></div>
+
+    <button class="order-btn" onclick="logout()">Logout</button>
+    <button class="order-btn" onclick="clearOrders()" style="background:#a83232; margin-top:10px;">
+        Clear All Orders
+    </button>
+</div>
+
 </section>
 
-<footer>Executive Access Only</footer>
-
 <script>
+
+const ACCESS_CODE = "FIDEX2026";
+
+// 🔐 Force login before anything loads
+document.addEventListener("DOMContentLoaded", () => {
+    if (sessionStorage.getItem("fidexAdminAuth") === "true") {
+        showAdmin();
+    } else {
+        document.getElementById("loginBox").style.display = "block";
+        document.getElementById("adminPanel").style.display = "none";
+    }
+});
+
+function login() {
+    let code = document.getElementById("adminCode").value;
+
+    if (code === ACCESS_CODE) {
+        sessionStorage.setItem("fidexAdminAuth", "true");
+        showAdmin();
+    } else {
+        alert("Incorrect Access Code");
+    }
+}
+
+function logout() {
+    sessionStorage.removeItem("fidexAdminAuth");
+    location.reload();
+}
+
+function showAdmin() {
+    document.getElementById("loginBox").style.display = "none";
+    document.getElementById("adminPanel").style.display = "block";
+    loadOrders();
+}
+
 function loadOrders() {
+
+    if (sessionStorage.getItem("fidexAdminAuth") !== "true") return;
+
     let orders = JSON.parse(localStorage.getItem("fidexOrders")) || [];
     let container = document.getElementById("orders");
+    let analyticsBox = document.getElementById("analytics");
 
-    if(orders.length === 0){
+    if (orders.length === 0) {
         container.innerHTML = "No orders yet.";
+        analyticsBox.innerHTML = "";
         return;
     }
 
+    // 📊 Analytics
+    let totalRevenue = 0;
+    let totalPacks = 0;
+
+    orders.forEach(order => {
+        totalRevenue += order.total;
+        totalPacks += order.quantity;
+    });
+
+    analyticsBox.innerHTML = `
+        <strong>Total Revenue:</strong> ₦${totalRevenue}<br>
+        <strong>Total Packs Sold:</strong> ${totalPacks}<br>
+        <strong>Total Orders:</strong> ${orders.length}
+        <hr>
+    `;
+
+    // 📁 Group by Name
     let grouped = {};
 
-    // Group by name
     orders.forEach(order => {
-        if(!grouped[order.name]) {
+        if (!grouped[order.name]) {
             grouped[order.name] = [];
         }
         grouped[order.name].push(order);
@@ -42,37 +109,34 @@ function loadOrders() {
 
     let html = "";
 
-    for(let customer in grouped) {
-        html += `<div style="margin-bottom:20px;">
-                    <h3>📁 ${customer}</h3>`;
+    for (let customer in grouped) {
+        html += `<h3>📁 ${customer}</h3>`;
 
         grouped[customer].forEach(order => {
             html += `
-            <div style="border:1px solid #ccc; padding:8px; margin:8px 0; border-radius:5px;">
+            <div style="border:1px solid #ccc; padding:8px; margin:8px 0;">
                 <strong>Ref:</strong> ${order.ref}<br>
-                Date: ${order.date}<br>
-                Type: ${order.sweetType}<br>
                 Quantity: ${order.quantity}<br>
                 Total: ₦${order.total}<br>
                 Phone: ${order.phone}<br>
-                Location: ${order.location}
+                Location: ${order.location}<br>
+                <small>${order.date}</small>
             </div>`;
         });
-
-        html += `</div>`;
     }
 
     container.innerHTML = html;
 }
 
-function clearOrders(){
-    if(confirm("Delete all orders?")){
+function clearOrders() {
+    if (sessionStorage.getItem("fidexAdminAuth") !== "true") return;
+
+    if (confirm("Delete ALL orders permanently?")) {
         localStorage.removeItem("fidexOrders");
         loadOrders();
     }
 }
 
-loadOrders();
 </script>
 
 </body>
