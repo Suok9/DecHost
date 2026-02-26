@@ -25,7 +25,7 @@ function sendOrder() {
     let total = quantity * 500;
 
     let message =
-    "Hello FidEx Bites,%0A%0A" +
+    "Hello FidEx Nuts,%0A%0A" +
     "I would like to place an order:%0A" +
     "--------------------------------%0A" +
     "Sweetening Type: " + sweetType + "%0A" +
