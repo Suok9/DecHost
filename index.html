@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="style.css">
 <link rel="manifest" href="manifest.json">
+
 </head>
 
 <body>
@@ -68,7 +69,34 @@ Submit Order on WhatsApp
     <a href="admin.html" class="admin-link">Executive Login</a>
 </footer>
 
-<script src="main.js"></script>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+    
+    const firebaseConfig = {
+        apiKey: "AIzaSyDzBRb6n9iHvzJ6cpJwPJ2hHJSovZkDb5o",
+        authDomain: "fidex-nuts.firebaseapp.com",
+        projectId: "fidex-nuts",
+        storageBucket: "fidex-nuts.firebasestorage.app",
+        messagingSenderId: "320625360054",
+        appId: "1:320625360054:web:22ee8bd1d879480c2ffa17"
+    };
+    
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    
+    window.db = db;
+</script>
+<script type="module" src="main.js"></script>
 
 </body>
 </html>
+
+
+
+
+
+
+
+
+

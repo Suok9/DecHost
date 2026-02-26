@@ -1,143 +1,179 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<meta charset="UTF-8">
-<title>FidEx Admin</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <title>FidEx Admin</title>
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-
-<section>
-
-<!-- LOGIN SCREEN -->
-<div class="product-box" id="loginBox">
-    <h2>Executive Login</h2>
-    <input type="password" id="adminCode" placeholder="Enter Access Code">
-    <button class="order-btn" onclick="login()">Login</button>
-</div>
-
-<!-- ADMIN PANEL (hidden completely) -->
-<div class="product-box" id="adminPanel" style="display:none;">
-    <h2>Executive Dashboard</h2>
-
-    <div id="analytics"></div>
-    <div id="orders"></div>
-
-    <button class="order-btn" onclick="logout()">Logout</button>
-    <button class="order-btn" onclick="clearOrders()" style="background:#a83232; margin-top:10px;">
-        Clear All Orders
-    </button>
-</div>
-
-</section>
-
-<script>
-
-const ACCESS_CODE = "FIDEX2026";
-
-// 🔐 Force login before anything loads
-document.addEventListener("DOMContentLoaded", () => {
-    if (sessionStorage.getItem("fidexAdminAuth") === "true") {
-        showAdmin();
-    } else {
-        document.getElementById("loginBox").style.display = "block";
-        document.getElementById("adminPanel").style.display = "none";
-    }
-});
-
-function login() {
-    let code = document.getElementById("adminCode").value;
-
-    if (code === ACCESS_CODE) {
-        sessionStorage.setItem("fidexAdminAuth", "true");
-        showAdmin();
-    } else {
-        alert("Incorrect Access Code");
-    }
-}
-
-function logout() {
-    sessionStorage.removeItem("fidexAdminAuth");
-    location.reload();
-}
-
-function showAdmin() {
-    document.getElementById("loginBox").style.display = "none";
-    document.getElementById("adminPanel").style.display = "block";
-    loadOrders();
-}
-
-function loadOrders() {
-
-    if (sessionStorage.getItem("fidexAdminAuth") !== "true") return;
-
-    let orders = JSON.parse(localStorage.getItem("fidexOrders")) || [];
-    let container = document.getElementById("orders");
-    let analyticsBox = document.getElementById("analytics");
-
-    if (orders.length === 0) {
-        container.innerHTML = "No orders yet.";
-        analyticsBox.innerHTML = "";
-        return;
-    }
-
-    // 📊 Analytics
-    let totalRevenue = 0;
-    let totalPacks = 0;
-
-    orders.forEach(order => {
-        totalRevenue += order.total;
-        totalPacks += order.quantity;
-    });
-
-    analyticsBox.innerHTML = `
-        <strong>Total Revenue:</strong> ₦${totalRevenue}<br>
-        <strong>Total Packs Sold:</strong> ${totalPacks}<br>
-        <strong>Total Orders:</strong> ${orders.length}
-        <hr>
-    `;
-
-    // 📁 Group by Name
-    let grouped = {};
-
-    orders.forEach(order => {
-        if (!grouped[order.name]) {
-            grouped[order.name] = [];
-        }
-        grouped[order.name].push(order);
-    });
-
-    let html = "";
-
-    for (let customer in grouped) {
-        html += `<h3>📁 ${customer}</h3>`;
-
-        grouped[customer].forEach(order => {
-            html += `
-            <div style="border:1px solid #ccc; padding:8px; margin:8px 0;">
-                <strong>Ref:</strong> ${order.ref}<br>
-                Quantity: ${order.quantity}<br>
-                Total: ₦${order.total}<br>
-                Phone: ${order.phone}<br>
-                Location: ${order.location}<br>
-                <small>${order.date}</small>
-            </div>`;
+    
+    <section>
+        
+        <!-- LOGIN SCREEN -->
+        <div class="product-box" id="loginBox">
+            <h2>Executive Login</h2>
+            <input type="password" id="adminCode" placeholder="Enter Access Code">
+            <button class="order-btn" onclick="login()">Login</button>
+        </div>
+        
+        <!-- ADMIN PANEL -->
+        <div class="product-box" id="adminPanel" style="display:none;">
+            <h2>Executive Dashboard</h2>
+            
+            <div id="analytics"></div>
+            <div id="orders"></div>
+            
+            <button class="order-btn" onclick="logout()">Logout</button>
+            
+            <button class="order-btn" onclick="clearOrders()" style="background:#a83232; margin-top:10px;">
+                Clear All Orders
+            </button>
+        </div>
+        
+    </section>
+    
+    <!-- 🔥 EVERYTHING BELOW MUST BE MODULE -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+        import {
+            getFirestore,
+            collection,
+            onSnapshot,
+            deleteDoc,
+            doc,
+            getDocs
+        } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyDzBRb6n9iHvzJ6cpJwPJ2hHJSovZkDb5o",
+            authDomain: "fidex-nuts.firebaseapp.com",
+            projectId: "fidex-nuts",
+            storageBucket: "fidex-nuts.firebasestorage.app",
+            messagingSenderId: "320625360054",
+            appId: "1:320625360054:web:22ee8bd1d879480c2ffa17"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        const ACCESS_CODE = "FIDEX2026";
+        
+        document.addEventListener("DOMContentLoaded", () => {
+            if (sessionStorage.getItem("fidexAdminAuth") === "true") {
+                showAdmin();
+            } else {
+                document.getElementById("loginBox").style.display = "block";
+                document.getElementById("adminPanel").style.display = "none";
+            }
         });
-    }
-
-    container.innerHTML = html;
-}
-
-function clearOrders() {
-    if (sessionStorage.getItem("fidexAdminAuth") !== "true") return;
-
-    if (confirm("Delete ALL orders permanently?")) {
-        localStorage.removeItem("fidexOrders");
-        loadOrders();
-    }
-}
-
-</script>
-
+        
+        window.login = function() {
+            let code = document.getElementById("adminCode").value;
+            
+            if (code === ACCESS_CODE) {
+                sessionStorage.setItem("fidexAdminAuth", "true");
+                showAdmin();
+            } else {
+                alert("Incorrect Access Code");
+            }
+        };
+        
+        window.logout = function() {
+            sessionStorage.removeItem("fidexAdminAuth");
+            location.reload();
+        };
+        
+        function showAdmin() {
+            document.getElementById("loginBox").style.display = "none";
+            document.getElementById("adminPanel").style.display = "block";
+            loadOrders();
+        }
+        
+        function loadOrders() {
+            
+            const container = document.getElementById("orders");
+            const analyticsBox = document.getElementById("analytics");
+            
+            onSnapshot(collection(db, "orders"), (snapshot) => {
+                
+                let orders = [];
+                
+                snapshot.forEach(docSnap => {
+                    orders.push({ id: docSnap.id, ...docSnap.data() });
+                });
+                
+                if (orders.length === 0) {
+                    container.innerHTML = "No orders yet.";
+                    analyticsBox.innerHTML = "";
+                    return;
+                }
+                
+                // 📊 Analytics
+                let totalRevenue = 0;
+                let totalPacks = 0;
+                
+                orders.forEach(order => {
+                    totalRevenue += order.total;
+                    totalPacks += order.quantity;
+                });
+                
+                analyticsBox.innerHTML = `
+            <strong>Total Revenue:</strong> ₦${totalRevenue}<br>
+            <strong>Total Packs Sold:</strong> ${totalPacks}<br>
+            <strong>Total Orders:</strong> ${orders.length}
+            <hr>
+        `;
+                
+                // 📁 Group by Name
+                let grouped = {};
+                
+                orders.forEach(order => {
+                    if (!grouped[order.name]) {
+                        grouped[order.name] = [];
+                    }
+                    grouped[order.name].push(order);
+                });
+                
+                let html = "";
+                
+                for (let customer in grouped) {
+                    
+                    html += `<h3>📁 ${customer}</h3>`;
+                    
+                    grouped[customer].forEach(order => {
+                        
+                        html += `
+                <div style="border:1px solid #ccc; padding:8px; margin:8px 0;">
+                    <strong>Ref:</strong> ${order.ref}<br>
+                    Quantity: ${order.quantity}<br>
+                    Total: ₦${order.total}<br>
+                    Phone: ${order.phone}<br>
+                    Location: ${order.location}<br>
+                </div>
+                `;
+                    });
+                }
+                
+                container.innerHTML = html;
+            });
+        }
+        
+        window.clearOrders = async function() {
+            
+            if (!confirm("Delete ALL orders permanently?")) return;
+            
+            const snapshot = await getDocs(collection(db, "orders"));
+            
+            for (const document of snapshot.docs) {
+                await deleteDoc(doc(db, "orders", document.id));
+            }
+            
+            alert("All orders deleted.");
+        };
+    </script>
+    
 </body>
+
 </html>

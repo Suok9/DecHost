@@ -1,37 +1,49 @@
+import { collection, addDoc, serverTimestamp }
+from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+
+// ===== Reference Generator =====
 function generateRef() {
     let random = Math.floor(Math.random() * 900000) + 100000;
     return "FDX-2026-" + random;
 }
 
-function increase() {
+// ===== Quantity Controls (Minimum 5) =====
+window.increase = function() {
     let qty = document.getElementById("quantity");
-    qty.value = parseInt(qty.value || 1) + 1;
+    qty.value = parseInt(qty.value || 5) + 1;
     updateTotal();
-}
+};
 
-function decrease() {
+window.decrease = function() {
     let qty = document.getElementById("quantity");
-    if (parseInt(qty.value) > 1) {
+    if (parseInt(qty.value) > 5) {
         qty.value = parseInt(qty.value) - 1;
         updateTotal();
     }
-}
+};
 
-function updateTotal() {
-    let quantity = parseInt(document.getElementById("quantity").value) || 1;
+window.updateTotal = function() {
+    let qtyInput = document.getElementById("quantity");
+    let quantity = parseInt(qtyInput.value) || 5;
+    
+    if (quantity < 5) {
+        quantity = 5;
+        qtyInput.value = 5;
+    }
+    
     let total = (quantity * 500) + 200;
     document.getElementById("totalDisplay").innerText = "Total: ₦" + total;
-}
+};
 
-function sendOrder() {
+// ===== SEND ORDER TO FIREBASE =====
+window.sendOrder = async function() {
     
     let name = document.getElementById("name").value.trim();
     let phone = document.getElementById("phone").value;
     let location = document.getElementById("location").value;
-    let sweetType = document.getElementById("sweetType").value;
-    let quantity = parseInt(document.getElementById("quantity").value) || 1;
+    let quantity = parseInt(document.getElementById("quantity").value) || 5;
     
-    if (name === "" || phone === "" || location === "" || sweetType === "") {
+    if (name === "" || phone === "" || location === "") {
         alert("Please fill all fields.");
         return;
     }
@@ -44,62 +56,36 @@ function sendOrder() {
         name,
         phone,
         location,
-        sweetType,
         quantity,
         total,
-        date: new Date().toLocaleString()
+        createdAt: serverTimestamp()
     };
     
-    let orders = JSON.parse(localStorage.getItem("fidexOrders")) || [];
-    orders.push(order);
-    localStorage.setItem("fidexOrders", JSON.stringify(orders));
-    
-    loadCustomerOrders();
-    
-    let message =
-        "Hello FidEx Nuts,%0A%0A" +
-        "Reference: " + refNumber + "%0A" +
-        "Type: " + sweetType + "%0A" +
-        "Quantity: " + quantity + "%0A" +
-        "Total: ₦" + total + "%0A%0A" +
-        "Name: " + name + "%0A" +
-        "Phone: " + phone + "%0A" +
-        "Location: " + location;
-    
-    window.open("https://wa.me/2348058075181?text=" + message, "_blank");
-}
-
-function loadCustomerOrders() {
-    let orders = JSON.parse(localStorage.getItem("fidexOrders")) || [];
-    let container = document.getElementById("customerOrders");
-    
-    if (!container) return;
-    
-    if (orders.length === 0) {
-        container.innerHTML = "No previous orders.";
-        return;
+    try {
+        await addDoc(collection(window.db, "orders"), order);
+        
+        let message =
+            "Hello FidEx Nuts,%0A%0A" +
+            "Reference: " + refNumber + "%0A" +
+            "Quantity: " + quantity + "%0A" +
+            "Total: ₦" + total + "%0A%0A" +
+            "Name: " + name + "%0A" +
+            "Phone: " + phone + "%0A" +
+            "Location: " + location;
+        
+        window.open("https://wa.me/2348058075181?text=" + message, "_blank");
+        
+        alert("Order submitted successfully!");
+        
+    } catch (error) {
+        console.error("Error saving order:", error);
+        alert("Error submitting order.");
     }
-    
-    let html = "";
-    
-    orders.slice().reverse().forEach(order => {
-        html += `
-        <div style="border:1px solid #ccc; padding:8px; margin:8px 0; border-radius:5px;">
-            <strong>Ref: ${order.ref}</strong><br>
-            ${order.sweetType}<br>
-            Quantity: ${order.quantity}<br>
-            Total: ₦${order.total}<br>
-            <small>${order.date}</small>
-        </div>`;
-    });
-    
-    container.innerHTML = html;
-}
+};
 
 updateTotal();
-loadCustomerOrders();
 
-// Register Service Worker
+// ===== Service Worker =====
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('service-worker.js')
@@ -108,7 +94,7 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-// Install Button Logic
+// ===== Install Button =====
 let deferredPrompt;
 
 window.addEventListener('beforeinstallprompt', (e) => {
