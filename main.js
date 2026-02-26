@@ -185,8 +185,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 // ================= SERVICE WORKER =================
+
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/DecHost/service-worker.js');
+        navigator.serviceWorker.register('/DecHost/service-worker.js')
+            .then(registration => {
+                console.log('Service Worker registered with scope:', registration.scope);
+            })
+            .catch(error => {
+                console.error('Service Worker registration failed:', error);
+            });
     });
 }
