@@ -8,7 +8,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 import {
-    signInWithPopup,
+    signInWithRedirect,
     GoogleAuthProvider,
     onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
@@ -20,7 +20,7 @@ const provider = new GoogleAuthProvider();
 // ================= GOOGLE LOGIN =================
 window.googleLogin = async function() {
     try {
-        await signInWithPopup(window.auth, provider);
+        await signInWithRedirect(window.auth, provider);
     } catch (error) {
         console.error(error);
         alert("Login failed.");
