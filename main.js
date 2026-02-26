@@ -187,6 +187,6 @@ document.addEventListener("DOMContentLoaded", () => {
 // ================= SERVICE WORKER =================
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('service-worker.js');
+        navigator.serviceWorker.register('/DecHost/service-worker.js');
     });
 }
