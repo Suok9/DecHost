@@ -8,11 +8,10 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 import {
-    signInWithRedirect,
+    signInWithPopup,
     GoogleAuthProvider,
     onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
-
 
 const provider = new GoogleAuthProvider();
 
@@ -20,10 +19,10 @@ const provider = new GoogleAuthProvider();
 // ================= GOOGLE LOGIN =================
 window.googleLogin = async function() {
     try {
-        await signInWithRedirect(window.auth, provider);
+        await signInWithPopup(window.auth, provider);
     } catch (error) {
-        console.error(error);
-        alert("Login failed.");
+        console.error("Login error:", error);
+        alert("Login failed: " + error.message);
     }
 };
 
@@ -45,7 +44,6 @@ onAuthStateChanged(window.auth, (user) => {
 window.loadCustomerOrders = async function() {
     
     let user = window.auth.currentUser;
-    
     if (!user) return;
     
     const q = query(
@@ -185,12 +183,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 // ================= SERVICE WORKER =================
-
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('/DecHost/service-worker.js')
             .then(registration => {
-                console.log('Service Worker registered with scope:', registration.scope);
+                console.log('Service Worker registered:', registration.scope);
             })
             .catch(error => {
                 console.error('Service Worker registration failed:', error);
