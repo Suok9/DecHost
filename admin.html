@@ -45,6 +45,13 @@
             doc,
             getDocs
         } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+        import { 
+    getAuth,
+    signInWithPopup,
+    GoogleAuthProvider,
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+
         
         const firebaseConfig = {
             apiKey: "AIzaSyDzBRb6n9iHvzJ6cpJwPJ2hHJSovZkDb5o",
@@ -57,6 +64,25 @@
         
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        
+        const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+
+function adminGoogleLogin() {
+    signInWithPopup(auth, provider)
+        .catch(error => alert(error.message));
+}
+
+onAuthStateChanged(auth, (user) => {
+    if (user && user.email === "ijaborrosuo@gmail.com") {
+        showAdmin();
+    } else {
+        document.getElementById("adminPanel").style.display = "none";
+        document.getElementById("loginBox").style.display = "block";
+    }
+});
+
+window.adminGoogleLogin = adminGoogleLogin;
         
         const ACCESS_CODE = "FIDEX2026";
         
